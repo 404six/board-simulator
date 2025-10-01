@@ -49,7 +49,30 @@ class Jogador(ABC):
     @abstractmethod
     def decidir_compra(self, propriedade: Propriedade) -> bool:
         """
-        Método abstrato que define a lógica de decisão de compra.
-        Cada subclasse deve implementar sua própria estratégia.
+        Método abstrato para definir a lógica de decisão de compra.
+        Cada subclasse irá implementar sua própria estrategia
         """
         pass
+
+# --- Estratégias ---
+class JogadorImpulsivo(Jogador):
+    """Compra qualquer propriedade (se tiver saldo)."""
+    def decidir_compra(self, propriedade: Propriedade) -> bool:
+        return self.saldo >= propriedade.custo_venda
+
+class JogadorExigente(Jogador):
+    """Compra se o aluguel for maior que 50 e tiver saldo."""
+    def decidir_compra(self, propriedade: Propriedade) -> bool:
+        return propriedade.valor_aluguel > 50 and self.saldo >= propriedade.custo_venda
+
+class JogadorCauteloso(Jogador):
+    """Compra se, após a compra seu saldo restante for 80 ou mais"""
+    def decidir_compra(self, propriedade: Propriedade) -> bool:
+        return (self.saldo - propriedade.custo_venda) >= 80
+
+class JogadorAleatorio(Jogador):
+    """Compra com 50% de probabilidade se tiver saldo."""
+    def decidir_compra(self, propriedade: Propriedade) -> bool:
+        if self.saldo >= propriedade.custo_venda:
+            return random.choice([True, False])
+        return False
