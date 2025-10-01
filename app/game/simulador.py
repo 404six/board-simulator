@@ -65,4 +65,28 @@ class Jogo:
             self.tabuleiro.liberar_propriedades(jogador)
 
     def simular(self) -> Dict:
-        pass
+        """
+        Simula uma partida completa do jogo.
+        """
+        self._preparar_nova_partida()
+        
+        for rodada in range(self.MAX_RODADAS):
+            for jogador in self.jogadores:
+                self._jogar_turno(jogador)
+
+            jogadores_ativos = [j for j in self.jogadores if j.esta_jogando]
+            if len(jogadores_ativos) == 1:
+                # condição de vitória: apenas um jogador restante
+                vencedor = jogadores_ativos[0]
+                break
+        else:
+            # condição de vitória: fim das 1000 rodadas (vence quem tem mais saldo)
+            vencedor = max(self.jogadores, key=lambda j: j.saldo)
+        
+        # ordena os jogadores por saldo para o resultado final
+        jogadores_ordenados = sorted(self.jogadores, key=lambda j: j.saldo, reverse=True)
+        
+        return {
+            "vencedor": vencedor.comportamento,
+            "jogadores": [j.comportamento for j in jogadores_ordenados]
+        }
